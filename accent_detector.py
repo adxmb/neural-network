@@ -3,8 +3,6 @@ import numpy as np
 import librosa
 import librosa.display
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-import soundfile as sf
 from flask import Flask, request, jsonify
 
 # Constants
@@ -12,7 +10,7 @@ SAMPLE_RATE = 22050
 MFCC_FEATURES = 40
 DATASET_PATH = "./dataset"
 
-"""Extracts the MFCC features from an audio file
+""" Extracts the MFCC features from an audio file
 
 :param file_path: The path to the audio file
 :param max_len: The maximum length of the audio file
@@ -30,7 +28,7 @@ def extract_features(file_path, max_len=30):
   # Transpose the mfcc to make time steps the first dimension
   return mfcc.T
 
-"""Loads the dataset from the ./dataset directory
+""" Loads the dataset from the ./dataset directory
 Audio files stored in labeled subdirectories have their features extracted and are allocated
 the correct label
 
@@ -64,7 +62,7 @@ X, y, labels = load_dataset(DATASET_PATH)
 X = np.expand_dims(X, -1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-"""Neural network class that implements a simple feedforward neural network with one hidden layer
+""" Neural network class that implements a simple feedforward neural network with one hidden layer
 
 :param input_size: The number of input features
 :param hidden_size: The number of hidden units
@@ -83,12 +81,12 @@ class NeuralNetwork:
   def sigmoid(self, x):
     return 1 / (1 + np.exp(-x))
   
-  # Softmax function 
+  # Softmax function
   def softmax(self, x):
     exp_x = np.exp(x - np.max(x))
-    return exp_x / exp_x.sum(asix=1, keepdims=True)
+    return exp_x / exp_x.sum(axis=1, keepdims=True)
   
-  # Forward propagation
+  # Forward propagation for computing the output
   def forward(self, X):
     self.Z1 = np.dot(X, self.W1) + self.b1
     self.A1 = self.sigmoid(self.Z1)
@@ -96,7 +94,7 @@ class NeuralNetwork:
     self.A2 = self.softmax(self.Z2)
     return self.A2
   
-  # Backward propagation
+  # Backward propagation for updating the weights
   def backward(self, X, y_true, y_pred):
     m = X.shape[0]
     dZ2 = y_pred
@@ -114,13 +112,13 @@ class NeuralNetwork:
     self.W1 -= self.lr * dW1
     self.b1 -= self.lr * db1
 
-  # Compute the loss
+  # Compute the loss using the negative log likelihood
   def compute_loss(self, y_true, y_pred):
     m = y_true.shape[0]
     log_likelihood = -np.log(y_pred[range(m), y_true])
     return np.sum(log_likelihood) / m
   
-  # Train the model
+  # Train the model using the training data
   def train(self, X, y, epochs=1000):
     for epoch in range(epochs):
       y_pred = self.forward(X)
@@ -138,6 +136,10 @@ neural_network.train(X_train.reshape(X_train.shape[0], -1), y_train, epochs=1000
 
 app = Flask(__name__)
 
+""" Flask app using POST request to predict the accent of an audio file
+
+:returns: JSON response with the predicted accent
+"""
 @app.route("/predict", methods=["POST"])
 def predict():
   file = request.files["file"]
@@ -147,6 +149,7 @@ def predict():
   features = extract_features(file_path)
   features = features.flatten().reshape(1, -1)
 
+  # Forward pass to predict the accent
   prediction = neural_network.forward(features)
   predicted_label = labels[np.argmax(prediction)]
   return jsonify({"accent": predicted_label})

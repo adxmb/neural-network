@@ -1,0 +1,18 @@
+
+america-1: 6 ways to make better connections online (https://www.ted.com/talks/margaux_miller_6_ways_to_make_better_connections_online)
+america-2: How to fund real change in your community (https://www.ted.com/talks/rebecca_darwent_how_to_fund_real_change_in_your_community)
+america-3: Why body language is the key to self-expression — and hot selfies (https://www.ted.com/talks/david_suh_why_body_language_is_the_key_to_self_expression_and_hot_selfies)
+
+australia-1: Australia, we need to talk | Cally Jetta | TEDxPerth (https://www.youtube.com/watch?v=p7FU8zuHaHg&ab_channel=TEDxTalks)
+australia-2: Adults, we need to have the talk | Thomas King | TEDxMelbourne (https://www.youtube.com/watch?v=q8IrpE9G_v4&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&ab_channel=TEDxTalks)
+australia-3: Made in Australia: Mariam Hakim at TEDxCanberraWomen (https://www.youtube.com/watch?v=spWi4TMKZq8&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=2&ab_channel=TEDxTalks)
+australia-4: TEDxDarwin - Chris Garner - Transforming the Teacher in Indigenous Education (https://www.youtube.com/watch?v=bMfBeotD8gc&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=20&ab_channel=TEDxTalks)
+
+england-1: An economic reality check (https://www.ted.com/talks/tim_jackson_an_economic_reality_check)
+england-2: Transition to a world without oil (https://www.ted.com/talks/rob_hopkins_transition_to_a_world_without_oil)
+england-3: Can salad dressing transform capitalism? (https://www.ted.com/talks/alex_amouyel_can_salad_dressing_transform_capitalism)
+england-4: Your brain hallucinates your conscious reality (https://www.ted.com/talks/anil_seth_your_brain_hallucinates_your_conscious_reality)
+
+south-africa-1: An Australian Initiative to Help Save the Rhino | Ray Dearlove | TEDxSydney (https://www.youtube.com/watch?v=KCFQYRc4mfY&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=21&ab_channel=TEDxTalks)
+south-africa-2: Growing young | Zolani Mahola | TEDxCapeTown (https://www.youtube.com/watch?v=VsGfcJjectQ&ab_channel=TEDxTalks)
+south-africa-3: Democracy works — we just need better leaders (https://www.ted.com/talks/lindiwe_mazibuko_democracy_works_we_just_need_better_leaders)
