@@ -12,7 +12,12 @@ SAMPLE_RATE = 22050
 MFCC_FEATURES = 40
 DATASET_PATH = "./dataset"
 
-# Extracting MFCC features from audio files
+"""Extracts the MFCC features from an audio file
+
+:param file_path: The path to the audio file
+:param max_len: The maximum length of the audio file
+:returns: mfcc: The extracted MFCC features from the audio file
+"""
 def extract_features(file_path, max_len=30):
   y, sr = librosa.load(file_path, sr=SAMPLE_RATE)
   mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=MFCC_FEATURES)
@@ -25,29 +30,47 @@ def extract_features(file_path, max_len=30):
   # Transpose the mfcc to make time steps the first dimension
   return mfcc.T
 
-# Load the dataset
+"""Loads the dataset from the ./dataset directory
+Audio files stored in labeled subdirectories have their features extracted and are allocated
+the correct label
+
+:param dataset_path: The path to the dataset directory
+:returns: extracted_features: The extracted features from the audio files
+"""
 def load_dataset(dataset_path):
-  X, y, labels = [], [], {}
+  extracted_features = []
+  extracted_accents = []
+  labels = {}
 
   for ind, accent in enumerate(os.listdir(dataset_path)):
     accent_path = os.path.join(dataset_path, accent)
+
+    # Check if the path with the accent exists
     if os.path.isdir(accent_path):
       labels[ind] = accent
       for file in os.listdir(accent_path):
         file_path = os.path.join(accent_path, file)
+        
+        # Extract features and corresponding accents from the audio files
         if file.endswith(".wav"):
           features = extract_features(file_path)
-          X.append(features)
-          y.append(ind)
+          extracted_features.append(features)
+          extracted_accents.append(ind)
 
-  return np.array(X), np.array(y), labels
+  return np.array(extracted_features), np.array(extracted_accents), labels
 
 # Load the data
 X, y, labels = load_dataset(DATASET_PATH)
 X = np.expand_dims(X, -1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Custom Neural Network
+"""Neural network class that implements a simple feedforward neural network with one hidden layer
+
+:param input_size: The number of input features
+:param hidden_size: The number of hidden units
+:param output_size: The number of output units
+:param lr: The learning rate for the neural network
+"""
 class NeuralNetwork:
   def __init__(self, input_size, hidden_size, output_size, lr=0.01):
     self.lr = lr
