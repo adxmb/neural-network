@@ -102,10 +102,10 @@ class NeuralNetwork:
     dZ2 /= m
 
     dW2 = np.dot(self.A1.T, dZ2)
-    db2 = np.sum(dZ2, axis=0, keepdims=True)
+    db2 = np.sum(dZ2, axis=0)
     dA1 = np.dot(dZ2, self.W2.T) * (self.A1 * (1 - self.A1))
     dW1 = np.dot(X.T, dA1)
-    db1 = np.sum(dA1, axis=0, keepdims=True)
+    db1 = np.sum(dA1, axis=0)
 
     self.W2 -= self.lr * dW2
     self.b2 -= self.lr * db2
@@ -155,4 +155,4 @@ def predict():
   return jsonify({"accent": predicted_label})
 
 if __name__ == "__main__":
-  app.run(debut=True)
+  app.run(debug=True)
