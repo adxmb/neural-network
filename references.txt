@@ -2,17 +2,27 @@
 america-1: 6 ways to make better connections online (https://www.ted.com/talks/margaux_miller_6_ways_to_make_better_connections_online)
 america-2: How to fund real change in your community (https://www.ted.com/talks/rebecca_darwent_how_to_fund_real_change_in_your_community)
 america-3: Why body language is the key to self-expression — and hot selfies (https://www.ted.com/talks/david_suh_why_body_language_is_the_key_to_self_expression_and_hot_selfies)
+america-4: How digital culture is reshaping our faces and bodies (https://www.ted.com/talks/elise_hu_how_digital_culture_is_reshaping_our_faces_and_bodies)
+america-5: How social media can make history (https://www.ted.com/talks/clay_shirky_how_social_media_can_make_history)
 
 australia-1: Australia, we need to talk | Cally Jetta | TEDxPerth (https://www.youtube.com/watch?v=p7FU8zuHaHg&ab_channel=TEDxTalks)
 australia-2: Adults, we need to have the talk | Thomas King | TEDxMelbourne (https://www.youtube.com/watch?v=q8IrpE9G_v4&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&ab_channel=TEDxTalks)
 australia-3: Made in Australia: Mariam Hakim at TEDxCanberraWomen (https://www.youtube.com/watch?v=spWi4TMKZq8&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=2&ab_channel=TEDxTalks)
 australia-4: TEDxDarwin - Chris Garner - Transforming the Teacher in Indigenous Education (https://www.youtube.com/watch?v=bMfBeotD8gc&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=20&ab_channel=TEDxTalks)
+australia-5: Chris Hemsworth Walk of Fame Ceremony (https://www.youtube.com/watch?v=jXnRIHUvw30&ab_channel=walkoffame)
 
 england-1: An economic reality check (https://www.ted.com/talks/tim_jackson_an_economic_reality_check)
 england-2: Transition to a world without oil (https://www.ted.com/talks/rob_hopkins_transition_to_a_world_without_oil)
 england-3: Can salad dressing transform capitalism? (https://www.ted.com/talks/alex_amouyel_can_salad_dressing_transform_capitalism)
 england-4: Your brain hallucinates your conscious reality (https://www.ted.com/talks/anil_seth_your_brain_hallucinates_your_conscious_reality)
+england-5: Jimmy Carr: The Easiest Way To Live A Happier Life | E106 (https://www.youtube.com/watch?v=roROKlZhZyo&ab_channel=TheDiaryOfACEO)
+england-6: James May on the global success of Top Gear, the end of The Grand Tour and more | Ti podcast 200 (https://www.youtube.com/watch?v=eYcTyVJCoBk&ab_channel=TheIntercooler)
+
+new-zealand-1: This is Aotearoa | Hōhepa (HORI) Thompson | TEDxKapiti (https://www.youtube.com/watch?v=kFDWyNAsagI)
+new-zealand-2: A vision for New Zealand | Guy Ryan | TEDxWellington (https://www.youtube.com/watch?v=V0A001CdtdY&ab_channel=TEDxTalks)
+new-zealand-3: A Change for New Zealand Farming (https://www.ted.com/talks/catherine_mccartin_a_change_for_new_zealand_farming)
 
 south-africa-1: An Australian Initiative to Help Save the Rhino | Ray Dearlove | TEDxSydney (https://www.youtube.com/watch?v=KCFQYRc4mfY&list=PLkKSoG93UlZRh4oRIj2dixbkcV2LwUXVd&index=21&ab_channel=TEDxTalks)
 south-africa-2: Growing young | Zolani Mahola | TEDxCapeTown (https://www.youtube.com/watch?v=VsGfcJjectQ&ab_channel=TEDxTalks)
 south-africa-3: Democracy works — we just need better leaders (https://www.ted.com/talks/lindiwe_mazibuko_democracy_works_we_just_need_better_leaders)
+south-africa-4: Driving Dreams: Nicky Abdinor at TEDxTableMountain (https://www.youtube.com/watch?v=oJV9LG9-Vp0&ab_channel=TEDxTalks)
