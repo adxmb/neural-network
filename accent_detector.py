@@ -126,13 +126,13 @@ class NeuralNetwork:
       self.backward(X, y, y_pred)
 
       # Print the loss every 200 epochs
-      if epoch % 200 == 0:
+      if epoch % 500 == 0:
         print(f"Epoch {epoch}, Loss: {loss:.4f}")
 
 # Training the model
 input_size = X_train.shape[1] * X_train.shape[2]
 neural_network = NeuralNetwork(input_size, hidden_size=128, output_size=len(labels))
-neural_network.train(X_train.reshape(X_train.shape[0], -1), y_train, epochs=1000)
+neural_network.train(X_train.reshape(X_train.shape[0], -1), y_train, epochs=10000)
 
 app = Flask(__name__)
 
@@ -142,6 +142,11 @@ app = Flask(__name__)
 """
 @app.route("/predict", methods=["POST"])
 def predict():
+  print("\nReceived a request at /predict")
+  if "file" not in request.files:
+    print("Error: No file provided\n")
+    return jsonify({"error": "No file provided"}), 400
+
   file = request.files["file"]
   file_path = "temp.wav"
   file.save(file_path)
@@ -152,7 +157,11 @@ def predict():
   # Forward pass to predict the accent
   prediction = neural_network.forward(features)
   predicted_label = labels[np.argmax(prediction)]
+
+  print(f"Predicted accent: {predicted_label}\n")
+  os.remove(file_path)
+
   return jsonify({"accent": predicted_label})
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(host="0.0.0.0", port=5001)
