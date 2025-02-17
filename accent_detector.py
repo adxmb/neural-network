@@ -81,6 +81,14 @@ class NeuralNetwork:
   def sigmoid(self, x):
     return 1 / (1 + np.exp(-x))
   
+  # Rectified Linear Unit (ReLU) function
+  def relu(self, x):
+    return np.maximum(0, x)
+  
+  # Derivative of the ReLU function
+  def relu_derivative(self, x):
+    return (x > 0).astype(float)
+  
   # Softmax function
   def softmax(self, x):
     exp_x = np.exp(x - np.max(x))
@@ -90,6 +98,7 @@ class NeuralNetwork:
   def forward(self, X):
     self.Z1 = np.dot(X, self.W1) + self.b1
     self.A1 = self.sigmoid(self.Z1)
+    # self.A1 = self.relu(self.Z1)
     self.Z2 = np.dot(self.A1, self.W2) + self.b2
     self.A2 = self.softmax(self.Z2)
     return self.A2
@@ -104,6 +113,7 @@ class NeuralNetwork:
     dW2 = np.dot(self.A1.T, dZ2)
     db2 = np.sum(dZ2, axis=0)
     dA1 = np.dot(dZ2, self.W2.T) * (self.A1 * (1 - self.A1))
+    # dA1 = np.dot(dZ2, self.W2.T) * self.relu_derivative(self.Z1)
     dW1 = np.dot(X.T, dA1)
     db1 = np.sum(dA1, axis=0)
 
@@ -119,20 +129,20 @@ class NeuralNetwork:
     return np.sum(log_likelihood) / m
   
   # Train the model using the training data
-  def train(self, X, y, epochs=1000):
+  def train(self, X, y, epochs=100):
     for epoch in range(epochs):
       y_pred = self.forward(X)
       loss = self.compute_loss(y, y_pred)
       self.backward(X, y, y_pred)
 
       # Print the loss every 200 epochs
-      if epoch % 500 == 0:
+      if epoch % 5 == 0:
         print(f"Epoch {epoch}, Loss: {loss:.4f}")
 
 # Training the model
 input_size = X_train.shape[1] * X_train.shape[2]
 neural_network = NeuralNetwork(input_size, hidden_size=128, output_size=len(labels))
-neural_network.train(X_train.reshape(X_train.shape[0], -1), y_train, epochs=10000)
+neural_network.train(X_train.reshape(X_train.shape[0], -1), y_train, epochs=100)
 
 app = Flask(__name__)
 
