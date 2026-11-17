@@ -21,7 +21,7 @@ def features_from_signal(y, sr=SAMPLE_RATE, n_mfcc=N_MFCC):
     stacked = np.vstack([mfcc, delta])
     return np.concat([stacked.mean(axis=1), stacked.std(axis=1)]).astype(np.float32)
 
-def extract_feature(file_path, sr=SAMPLE_RATE):
+def extract_features(file_path, sr=SAMPLE_RATE):
     """Load audio file and compute feature vector"""
     y, _ = librosa.load(file_path, sr=sr, mono=True, duration=MAX_SECONDS)
     return features_from_signal(y, sr)
