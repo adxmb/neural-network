@@ -5,9 +5,10 @@ import argparse
 import json
 from pathlib import Path
 
-from accent_recognition.data import build_dataset, split_by_group
+from accent_recognition.data import build_dataset, limit_clips_per_group, split_by_group
 from accent_recognition.evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
                       majority_baseline, per_class_report)
+from accent_recognition.cv import cross_validate
 from accent_recognition.model import NeuralNetwork, Standardiser
 
 
@@ -23,10 +24,29 @@ def main():
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--patience", type=int, default=30)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--max-clips-per-speaker", type=int, default=0, metavar="N",
+                   help="use at most N randomly chosen clips per speaker (0 = use all)")
+    p.add_argument("--cv", type=int, default=0, metavar="K",
+                   help="run speaker-grouped K-fold cross-validation instead of a single split "
+                        "(reports mean and std; does not save a model)")
+    p.add_argument("--cv-metrics", default="artifacts/cv_metrics.json")
     args = p.parse_args()
 
     X, y, groups, classes, _ = build_dataset(args.data)
+    if args.max_clips_per_speaker:
+        keep = limit_clips_per_group(groups, args.max_clips_per_speaker, seed=args.seed)
+        X, y, groups = X[keep], y[keep], groups[keep]
     print(f"{len(y)} clips, {len(set(groups))} speakers, classes: {classes}")
+
+    if args.cv:
+        result = cross_validate(X, y, groups, classes, k=args.cv, seed=args.seed,
+                                hidden=args.hidden, lr=args.lr, l2=args.l2,
+                                epochs=args.epochs, batch_size=args.batch_size,
+                                patience=args.patience)
+        Path(args.cv_metrics).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.cv_metrics).write_text(json.dumps(result, indent=2))
+        print(f"saved cross-validation results -> {args.cv_metrics}")
+        return
 
     train, val, test = split_by_group(y, groups, seed=args.seed)
     print(f"split -> train {len(train)}, val {len(val)}, test {len(test)}")

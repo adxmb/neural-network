@@ -1,0 +1,51 @@
+{
+  "test_accuracy": 0.455,
+  "majority_baseline": 0.3333333333333333,
+  "logistic_regression_baseline": 0.4666666666666667,
+  "classes": [
+    "american",
+    "english",
+    "scottish"
+  ],
+  "confusion_matrix": [
+    [
+      174,
+      84,
+      42
+    ],
+    [
+      106,
+      212,
+      182
+    ],
+    [
+      71,
+      169,
+      160
+    ]
+  ],
+  "per_class": {
+    "american": {
+      "precision": 0.49572649572649574,
+      "recall": 0.58,
+      "f1": 0.5345622119815668,
+      "support": 300
+    },
+    "english": {
+      "precision": 0.4559139784946237,
+      "recall": 0.424,
+      "f1": 0.4393782383419689,
+      "support": 500
+    },
+    "scottish": {
+      "precision": 0.4166666666666667,
+      "recall": 0.4,
+      "f1": 0.4081632653061225,
+      "support": 400
+    }
+  },
+  "n_train": 3600,
+  "n_val": 900,
+  "n_test": 1200,
+  "seed": 3
+}

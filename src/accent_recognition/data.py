@@ -51,3 +51,14 @@ def split_by_group(y, groups, test_size=0.2, val_size=0.2, seed=42):
     inner = GroupShuffleSplit(n_splits=1, test_size=val_size, random_state=seed)
     train, val = next(inner.split(trainval, y[trainval], groups[trainval]))
     return trainval[train], trainval[val], test
+
+def limit_clips_per_group(groups, max_clips, seed=0):
+    """Indices to keep so that no speaker has more than max_clips clips (chosen at random)"""
+    rng = np.random.default_rng(seed)
+    keep = []
+    for group in np.unique(groups):
+        idx = np.flatnonzero(groups == group)
+        if len(idx) > max_clips:
+            idx = rng.choice(idx, size=max_clips, replace=False)
+        keep.extend(idx.tolist())
+    return np.array(sorted(keep))

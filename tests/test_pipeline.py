@@ -105,3 +105,24 @@ def test_api_predict(tmp_path, monkeypatch):
 
         bad = client.post("/predict", files={"file": ("x.wav", b"not audio", "audio/wav")})
         assert bad.status_code == 400
+
+def test_cross_validate_runs(tmp_path):
+    from accent_recognition.cv import cross_validate
+
+    make_dataset(tmp_path)
+    X, y, groups, classes, _ = build_dataset(tmp_path)
+    result = cross_validate(X, y, groups, classes, k=3, hidden=16, epochs=150, verbose=False)
+    assert len(result["folds"]) == 3
+    assert result["summary"]["network"]["mean"] > 0.9
+    assert result["summary"]["majority"]["mean"] < 0.5
+
+
+def test_limit_clips_per_group():
+    from accent_recognition.data import limit_clips_per_group
+
+    groups = np.array(["a"] * 10 + ["b"] * 5 + ["c"] * 2)
+    keep = limit_clips_per_group(groups, 4, seed=1)
+    counts = {g: int((groups[keep] == g).sum()) for g in "abc"}
+    assert counts == {"a": 4, "b": 4, "c": 2}
+    assert list(keep) == sorted(keep)
+    assert list(keep) == list(limit_clips_per_group(groups, 4, seed=1))
