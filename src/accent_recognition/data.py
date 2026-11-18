@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.model_selection import GroupShuffleSplit
 
-from src.accent_recognition.features import extract_features
+from .features import extract_features
 
 AUDIO_EXTENSIONS = {".wav", ".flac", ".mp3", ".ogg"}
 

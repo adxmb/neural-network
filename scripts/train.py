@@ -5,17 +5,17 @@ import argparse
 import json
 from pathlib import Path
 
-from src.accent_recognition.data import build_dataset, split_by_group
-from src.accent_recognition.evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
+from accent_recognition.data import build_dataset, split_by_group
+from accent_recognition.evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
                       majority_baseline, per_class_report)
-from src.accent_recognition.model import NeuralNetwork, Standardizer
+from accent_recognition.model import NeuralNetwork, Standardizer
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--data", default="./dataset")
-    p.add_argument("--out", default="model.npz")
-    p.add_argument("--metrics", default="metrics.json")
+    p.add_argument("--out", default="artifacts/model.npz")
+    p.add_argument("--metrics", default="artifacts/metrics.json")
     p.add_argument("--hidden", type=int, default=64)
     p.add_argument("--lr", type=float, default=0.05)
     p.add_argument("--l2", type=float, default=1e-3)
@@ -53,6 +53,8 @@ def main():
         "seed": args.seed,
     }
 
+    for out in (args.out, args.metrics):
+        Path(out).parent.mkdir(parents=True, exist_ok=True)
     net.save(args.out, scaler, classes)
     Path(args.metrics).write_text(json.dumps(metrics, indent=2))
 

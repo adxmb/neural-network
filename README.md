@@ -1,36 +1,31 @@
-# Accent Recognition Neural Network
+## What's here
 
-### Developers: Adam Bodicoat
+| Path                                 | Purpose                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `src/accent_recognition/features.py` | Whole-clip features: mean and std of 20 MFCCs and their deltas (80 values)                        |
+| `src/accent_recognition/model.py`    | NumPy neural network: ReLU hidden layer, softmax, L2, minibatch SGD, early stopping, save/load    |
+| `src/accent_recognition/data.py`     | Dataset loading and a **speaker-aware** train/val/test split                                      |
+| `src/accent_recognition/evaluate.py` | Accuracy, confusion matrix, per-class precision/recall/F1, baselines                              |
+| `src/accent_recognition/app.py`      | FastAPI service with `/predict` and `/health`                                                     |
+| `scripts/train.py`                   | Trains, evaluates on held-out speakers, writes `artifacts/model.npz` and `artifacts/metrics.json` |
+| `tests/test_pipeline.py`             | Gradient check, end-to-end training, save/load and API tests                                      |
+| `docs/dataset.md`                    | Dataset source, licence and speaker selection rule                                                |
 
-This project is for me to learn about neural networks, how they work, and their applications. This is not intended to be a comprehensive, cutting-edge implementation of a neural network, just a way for me to develop a better understanding of how they work and how they can be used, in this case to identify different accents in english speech.
+## Quick start
 
-In this project, I will be using the `librosa` library to extract features from audio files, and then using a neural network to classify the accent of the speaker. The neural network will be implemented from scratch, using only the `numpy` library.
+```bash
+pip install -r requirements.txt
+pip install -e .
+python scripts/train.py --data dataset --out artifacts/model.npz
+MODEL_PATH=artifacts/model.npz uvicorn accent_recognition.app:app --port 8000
+curl -X POST -F "file=@clip.wav" http://127.0.0.1:8000/predict
+```
 
-## Tech Stack
+Or with Docker (after training):
 
-- **Python** (primary language)
-- **Flask** (for the server)
-- **Numpy** (for neural network matrix operations)
-- **Librosa** (for audio processing)
+```bash
+docker build -t accent-recognition .
+docker run -p 8000:8000 accent-recognition
+```
 
-## How to Use
-
-In the terminal/command line, you can use the following commands to use the project:
-
-- `pip install -r requirements.txt`
-
-  If requirements not already installed
-
-- `python accent_detector.py`
-
-  Trains and runs the neural network and starts up the Flask server
-
-- `curl -X POST -F "file=@<audio_file.wav>" http://127.0.0.1:5001/predict`
-
-  Sends a POST request to the server. If you have changed the IP address or port number for the server, you will need to change this command accordingly. Replace `<audio_file.wav>` with the path to the audio file you want to classify. This must be in the `.wav` format. This will return a JSON object with the output from the neural network.
-
-## Training Data
-
-This project uses a small custom dataset of audio files in the `./dataset` directory. Within this directory are subdirectories for each accent included which include `.wav` audio files for those accents. If you wish to use this project with your own dataset, you can replace the audio files in the `./dataset` directory with your own audio files.
-
-All data used in this training set is referenced in `references.txt`.
+Run the tests with `pytest`.
