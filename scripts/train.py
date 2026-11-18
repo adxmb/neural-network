@@ -8,7 +8,7 @@ from pathlib import Path
 from accent_recognition.data import build_dataset, split_by_group
 from accent_recognition.evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
                       majority_baseline, per_class_report)
-from accent_recognition.model import NeuralNetwork, Standardizer
+from accent_recognition.model import NeuralNetwork, Standardiser
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     train, val, test = split_by_group(y, groups, seed=args.seed)
     print(f"split -> train {len(train)}, val {len(val)}, test {len(test)}")
 
-    scaler = Standardizer().fit(X[train])
+    scaler = Standardiser().fit(X[train])
     X_train, X_val, X_test = (scaler.transform(X[i]) for i in (train, val, test))
 
     net = NeuralNetwork(X.shape[1], args.hidden, len(classes),

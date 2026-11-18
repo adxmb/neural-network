@@ -58,7 +58,7 @@ def test_end_to_end_training_learns(tmp_path):
     make_dataset(tmp_path)
     X, y, groups, classes, _ = build_dataset(tmp_path)
     train, val, test = split_by_group(y, groups)
-    scaler = Standardizer().fit(X[train])
+    scaler = Standardiser().fit(X[train])
     net = NeuralNetwork(X.shape[1], 16, len(classes), seed=0)
     net.fit(scaler.transform(X[train]), y[train], scaler.transform(X[val]), y[val],
             epochs=200, verbose=False)
@@ -69,7 +69,7 @@ def test_end_to_end_training_learns(tmp_path):
 def test_save_and_load_roundtrip(tmp_path):
     make_dataset(tmp_path / "data")
     X, y, groups, classes, _ = build_dataset(tmp_path / "data")
-    scaler = Standardizer().fit(X)
+    scaler = Standardiser().fit(X)
     net = NeuralNetwork(X.shape[1], 8, len(classes), seed=0)
     path = tmp_path / "model.npz"
     net.save(path, scaler, classes)
@@ -84,7 +84,7 @@ def test_api_predict(tmp_path, monkeypatch):
 
     make_dataset(tmp_path / "data")
     X, y, groups, classes, paths = build_dataset(tmp_path / "data")
-    scaler = Standardizer().fit(X)
+    scaler = Standardiser().fit(X)
     net = NeuralNetwork(X.shape[1], 16, len(classes), seed=0)
     net.fit(scaler.transform(X), y, epochs=150, verbose=False)
     model_path = tmp_path / "model.npz"

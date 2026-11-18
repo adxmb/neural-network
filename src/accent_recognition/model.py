@@ -110,7 +110,7 @@ class NeuralNetwork:
     def predict_proba(self, X):
         return self.forward(X)
 
-    def predixt(self, X):
+    def predict(self, X):
         return self.forward(X).argmax(axis=1)
 
     # -------- persistence ---------

@@ -1,5 +1,5 @@
 """FastAPI service that sers a trained accent model
-uvicorn app:app --host 0.0.0.0 --port 8000
+uvicorn accent_recognition.app:app --host 0.0.0.0 --port 8000
 """
 import os
 import tempfile
