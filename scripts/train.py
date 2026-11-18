@@ -5,10 +5,10 @@ import argparse
 import json
 from pathlib import Path
 
-from data import build_dataset, split_by_group
-from evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
+from src.accent_recognition.data import build_dataset, split_by_group
+from src.accent_recognition.evaluate import (accuracy, confusion_matrix, logistic_regression_baseline,
                       majority_baseline, per_class_report)
-from model import NeuralNetwork, Standardizer
+from src.accent_recognition.model import NeuralNetwork, Standardizer
 
 
 def main():

@@ -3,9 +3,9 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from data import build_dataset, split_by_group
-from features import FEATURE_SIZE, SAMPLE_RATE
-from model import NeuralNetwork, Standardiser
+from src.accent_recognition.data import build_dataset, split_by_group
+from src.accent_recognition.features import FEATURE_SIZE, SAMPLE_RATE
+from src.accent_recognition.model import NeuralNetwork, Standardiser
 
 ACCENT_FREQS = {"alpha": 220.0, "beta": 440.0, "gamma": 880.0}
 
@@ -90,7 +90,7 @@ def test_api_predict(tmp_path, monkeypatch):
     model_path = tmp_path / "model.npz"
     net.save(model_path, scaler, classes)
 
-    import app as app_module
+    import src.accent_recognition.app as app_module
     monkeypatch.setattr(app_module, "MODEL_PATH", str(model_path))
 
     with TestClient(app_module.app) as client:

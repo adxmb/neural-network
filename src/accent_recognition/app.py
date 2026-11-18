@@ -6,8 +6,8 @@ import tempfile
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 
-from features import extract_features
-from model import NeuralNetwork
+from src.accent_recognition.features import extract_features
+from src.accent_recognition.model import NeuralNetwork
 
 MODEL_PATH = os.environ.get("MODEL_PATH", "model.npz")
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
