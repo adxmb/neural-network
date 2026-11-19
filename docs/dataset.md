@@ -2,86 +2,70 @@
 
 ## Source
 
-- Corpus: CSTR VCTK Corpus, version 0.92 (Yamagishi, Veaux and MacDonald, 2019).
-- Download page: https://datashare.ed.ac.uk/handle/10283/3443 (DOI 10.7488/ds/2645).
-- Licence: attribution licence. The Hugging Face dataset card lists CC BY 4.0.
-  The DataShare page has the authoritative terms.
-- Accessed: November 2026.
-- Citation: Yamagishi, J., Veaux, C., and MacDonald, K. (2019). CSTR VCTK Corpus:
+- Corpus: CSTR VCTK Corpus, version 0.92 (Yamagishi, Veaux and MacDonald, 2019)
+- Download: https://datashare.ed.ac.uk/handle/10283/3443 (DOI: 10.7488/ds/2645)
+- Licence: CC BY 4.0. Attribution is required.
+- Accessed: November 2026
+- Citation: Yamagishi, J., Veaux, C., & MacDonald, K. (2019). CSTR VCTK Corpus:
   English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92).
   University of Edinburgh. The Centre for Speech Technology Research (CSTR).
   https://doi.org/10.7488/ds/2645
 
-The audio is not stored in this repository. `dataset/`, `dataset_all/` and `data/`
-are in `.gitignore`.
-
-## Why VCTK
-
-- Each speaker has an accent label and a speaker ID.
-- The file names carry the speaker ID (for example `p225_001`). The speaker-aware
-  split needs this.
-- All recordings come from one project. This lowers the risk that the model learns
-  the microphone instead of the accent.
-
-## Accents in VCTK and accents used
-
-Speakers per accent in VCTK 0.92 (from `prepare_dataset.py --list`):
-
-| Accent        | Speakers | Used |
-| ------------- | -------- | ---- |
-| english       | 33       | yes  |
-| american      | 22       | yes  |
-| scottish      | 19       | yes  |
-| irish         | 9        | no   |
-| canadian      | 8        | no   |
-| northernirish | 6        | no   |
-| southafrican  | 4        | no   |
-| indian        | 3        | no   |
-| australian    | 2        | no   |
-| newzealand    | 1        | no   |
-| welsh         | 1        | no   |
-| unknown       | 1        | no   |
-
-I used the three accents with at least 19 speakers. A test on new speakers needs
-several speakers for each accent in the training set and in the test set. Accents
-with 1 to 9 speakers cannot give a valid test. Australian, New Zealand, South
-African and Indian English are not in the model for this reason.
+The audio is not stored in this repository. The folders `dataset/`, `dataset_all/`
+and `data/` are in `.gitignore`.
 
 ## Selection
 
-- Accent labels: the ACCENTS column of `speaker-info.txt`.
-- Speakers per accent: 19. The 19 Scottish speakers are all used. The English and
-  American speakers are chosen at random (seed 42).
-- Clips per speaker: 100, chosen at random (seed 42).
+- Accent labels: the ACCENTS column of VCTK's `speaker-info.txt`.
+- Accents used: English, American and Scottish.
+- Accents excluded: all others. Canadian has 8 speakers. Australian, New Zealand,
+  Indian, South African and the rest have 1 to 4. The classes are too small for a test
+  on speakers the model has not seen.
+- Speakers: every VCTK speaker with one of the three accents.
+- Clips per speaker: 30, chosen at random with seed 42.
 - Microphone: mic1.
-- Total: 57 speakers and 5,700 clips (19 speakers and 1,900 clips for each accent).
+
+| Accent   | Speakers | Clips |
+| -------- | -------- | ----- |
+| English  | 33       | 990   |
+| American | 22       | 660   |
+| Scottish | 19       | 570   |
+
+Total: 2,220 clips from 74 speakers.
+
+The classes have different sizes. Always answering "English" is right for 44.6% of the
+clips. For this reason, the main metric is balanced accuracy, and the training loss
+uses class weights. See `design.md`.
 
 ## Preparation
 
-- The source files are the silence-trimmed 48 kHz FLAC recordings.
-- Each clip is converted to mono, 16 kHz, 16-bit WAV.
-- Clips shorter than 0.5 s are skipped. No clip was skipped in the current dataset.
+- Source files are VCTK's silence-trimmed 48 kHz FLAC recordings.
+- The script converts each clip to mono 16 kHz, 16-bit WAV. It skips clips shorter than
+  0.5 s.
 - Each clip is one VCTK utterance (one read sentence). Clips are not re-cut.
-- File names are `<speaker>_<utterance>.wav`. The speaker is the part before the
-  first underscore.
-- `dataset/manifest.csv` lists every clip with its speaker and accent.
-- The script downloads only the selected clips. It reads the archive index and uses
-  HTTP range requests. It does not download the full archive.
+- Filenames are `<speaker>_<utterance>.wav` (for example `p225_001.wav`). The speaker is
+  the prefix before the first underscore. Training, validation and test data never share
+  a speaker.
+- `manifest.csv` in the dataset folder lists every clip with its speaker and accent.
+- The build can resume after a network error. It skips clips that exist. Use `--force`
+  to write into a folder that is not empty.
 
-## Rebuild
+Rebuild (downloads only the selected clips, about 100 MB):
 
-```bash
-python scripts/prepare_dataset.py --remote --list
-python scripts/prepare_dataset.py --remote --accents english american scottish \
-    --speakers-per-accent 19 --clips-per-speaker 100
-```
+    python scripts/prepare_dataset.py --remote --list
+    python scripts/prepare_dataset.py --remote --accents english american scottish \
+        --speakers-per-accent 40 --clips-per-speaker 30 --out dataset_all
 
-## Limits of the data
+The first command prints the number of speakers for each accent.
 
-- The speakers read text in a studio. The model has not seen spontaneous speech,
-  noise, or telephone audio.
-- There are few speakers. A test fold has 11 or 12 speakers. One speaker changes
-  the accuracy of a fold by about 8 points.
-- The 100 clips from one speaker are not independent. For accent, they are close to
-  one sample. The number of speakers limits the model, not the number of clips.
-- Accent labels are coarse. Speakers with the same label can sound different.
+## Known limits
+
+- The data is read speech. Every speaker reads text. It says little about natural
+  speech.
+- The recordings are clean and consistent. The model has not seen noisy or
+  phone-quality audio.
+- Accent labels are coarse. Speakers with one label differ a lot.
+- Each class has 19 to 33 speakers. In each cross-validation fold, 14 or 15 speakers are
+  tested. Results change by several points from fold to fold (see `design.md`).
+- Many speakers read the same sentences. Some VCTK speakers read the same text as
+  others, so the model could learn the text instead of the accent. This is not tested.
