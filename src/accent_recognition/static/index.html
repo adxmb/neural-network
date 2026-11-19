@@ -3,98 +3,249 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Accent Recognition</title>
+        <title>Accent Recognition by adxmb</title>
+        <meta
+            name="description"
+            content="Classify an English accent from your voice. A neural network written from scratch in NumPy."
+        />
         <style>
             :root {
-                --bg: #fafaf7;
-                --fg: #1d1d1b;
-                --muted: #6b6b66;
-                --card: #ffffff;
-                --line: #e2e2dc;
-                --accent: #2f5d50;
-                --accent-fg: #ffffff;
-                --warn: #8a5a00;
-                --warn-bg: #fff4d6;
-                --bar: #2f5d50;
-                --bar-bg: #ecece6;
+                --bg: #f6f7f5;
+                --panel: #ffffff;
+                --fg: #101412;
+                --muted: #55605b;
+                --line: #dde2de;
+                --accent: #3185c9;
+                --accent-soft: #e3f3ec;
+                --on-accent: #ffffff;
+                --rec: #d92d3a;
+                --bar-bg: #e8ece9;
+                --warn-bg: #fff3d4;
+                --warn-fg: #7a5200;
+                --btn-bg: #101412;
+                --btn-fg: #ffffff;
+                --shadow:
+                    0 1px 2px rgba(16, 20, 18, 0.06),
+                    0 8px 24px rgba(16, 20, 18, 0.06);
             }
             @media (prefers-color-scheme: dark) {
                 :root {
-                    --bg: #141413;
-                    --fg: #ecece6;
-                    --muted: #9a9a92;
-                    --card: #1d1d1b;
-                    --line: #33332f;
-                    --accent: #7fb5a3;
-                    --accent-fg: #11201b;
-                    --warn: #f0c36b;
-                    --warn-bg: #2d2511;
-                    --bar: #7fb5a3;
-                    --bar-bg: #2a2a27;
+                    --bg: #090c0b;
+                    --panel: #121715;
+                    --fg: #eef2ef;
+                    --muted: #9aa7a0;
+                    --line: #222b27;
+                    --accent: #3db4dc;
+                    --accent-soft: #12261d;
+                    --on-accent: #06140d;
+                    --rec: #ff5964;
+                    --bar-bg: #1c2420;
+                    --warn-bg: #2b2310;
+                    --warn-fg: #f2c66d;
+                    --btn-bg: #eef2ef;
+                    --btn-fg: #090c0b;
+                    --shadow:
+                        0 0 0 1px rgba(255, 255, 255, 0.02),
+                        0 12px 32px rgba(0, 0, 0, 0.4);
                 }
             }
             * {
                 box-sizing: border-box;
             }
+            html {
+                -webkit-text-size-adjust: 100%;
+            }
             body {
                 margin: 0;
+                min-height: 100vh;
                 background: var(--bg);
                 color: var(--fg);
                 font:
-                    16px/1.5 system-ui,
+                    16px/1.55 ui-sans-serif,
+                    system-ui,
                     -apple-system,
                     "Segoe UI",
+                    Roboto,
                     sans-serif;
             }
-            main {
-                max-width: 640px;
+            .wrap {
+                max-width: 560px;
                 margin: 0 auto;
-                padding: 32px 16px 64px;
+                padding: 20px 16px 48px;
             }
-            h1 {
-                font-size: 1.6rem;
-                margin: 0 0 4px;
-            }
-            p.lead {
-                color: var(--muted);
-                margin: 0 0 24px;
-            }
-            .card {
-                background: var(--card);
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                padding: 20px;
-                margin-bottom: 16px;
-            }
-            .row {
+
+            header {
                 display: flex;
-                gap: 12px;
-                flex-wrap: wrap;
                 align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 4px 0 28px;
             }
-            button,
-            label.btn {
-                font: inherit;
-                cursor: pointer;
-                border-radius: 8px;
-                padding: 10px 16px;
-                border: 1px solid var(--line);
-                background: var(--card);
-                color: var(--fg);
+            .brand {
+                font-weight: 700;
+                letter-spacing: -0.01em;
+                font-size: 1.05rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
             }
-            button.primary {
+            .brand i {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
                 background: var(--accent);
-                color: var(--accent-fg);
-                border-color: var(--accent);
+                display: inline-block;
             }
-            button:disabled {
+            .user {
+                color: var(--accent);
+            }
+            .gh {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 14px;
+                border-radius: 999px;
+                background: var(--btn-bg);
+                color: var(--btn-fg);
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+            .gh:hover {
+                opacity: 0.88;
+            }
+            .gh svg {
+                width: 18px;
+                height: 18px;
+                fill: currentColor;
+            }
+            a:focus-visible,
+            button:focus-visible,
+            label:focus-within {
+                outline: 2px solid var(--accent);
+                outline-offset: 3px;
+            }
+
+            h1 {
+                font-size: clamp(1.9rem, 6vw, 2.5rem);
+                line-height: 1.1;
+                letter-spacing: -0.03em;
+                margin: 0 0 10px;
+            }
+            .lead {
+                color: var(--muted);
+                margin: 0 0 28px;
+                font-size: 1.05rem;
+            }
+
+            .panel {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                box-shadow: var(--shadow);
+            }
+            .stage {
+                padding: 32px 20px 24px;
+                text-align: center;
+            }
+
+            .mic {
+                position: relative;
+                width: 104px;
+                height: 104px;
+                border-radius: 50%;
+                border: 0;
+                cursor: pointer;
+                background: var(--accent);
+                color: var(--on-accent);
+                display: inline-grid;
+                place-items: center;
+                transition:
+                    transform 0.15s,
+                    background 0.2s;
+            }
+            .mic:hover {
+                transform: scale(1.04);
+            }
+            .mic:active {
+                transform: scale(0.97);
+            }
+            .mic svg {
+                width: 38px;
+                height: 38px;
+                fill: currentColor;
+            }
+            .mic .stop {
+                display: none;
+            }
+            .mic.on {
+                background: var(--rec);
+                color: #fff;
+            }
+            .mic.on .mic-icon {
+                display: none;
+            }
+            .mic.on .stop {
+                display: block;
+            }
+            .mic.on::before,
+            .mic.on::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: 50%;
+                border: 2px solid var(--rec);
+                animation: ring 1.6s ease-out infinite;
+            }
+            .mic.on::after {
+                animation-delay: 0.8s;
+            }
+            @keyframes ring {
+                from {
+                    transform: scale(1);
+                    opacity: 0.7;
+                }
+                to {
+                    transform: scale(1.7);
+                    opacity: 0;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .mic.on::before,
+                .mic.on::after {
+                    animation: none;
+                }
+            }
+            .mic:disabled {
                 opacity: 0.5;
                 cursor: not-allowed;
+                transform: none;
             }
-            button:focus-visible,
-            label.btn:focus-within {
-                outline: 2px solid var(--accent);
-                outline-offset: 2px;
+
+            .hint {
+                margin: 16px 0 0;
+                font-weight: 600;
+            }
+            #status {
+                color: var(--muted);
+                min-height: 1.55em;
+                margin: 4px 0 0;
+                font-size: 0.95rem;
+            }
+            #status.err {
+                color: var(--rec);
+            }
+            .or {
+                margin: 18px 0 0;
+                color: var(--muted);
+                font-size: 0.95rem;
+            }
+            .upload {
+                color: var(--fg);
+                font-weight: 600;
+                text-decoration: underline;
+                text-underline-offset: 3px;
+                cursor: pointer;
             }
             input[type="file"] {
                 position: absolute;
@@ -102,38 +253,66 @@
                 width: 0;
                 height: 0;
             }
-            #status {
-                color: var(--muted);
-                min-height: 1.5em;
-                margin-top: 12px;
-            }
             audio {
                 width: 100%;
-                margin-top: 12px;
+                margin-top: 18px;
+                height: 40px;
             }
-            .result-title {
-                font-size: 1.3rem;
-                margin: 0 0 12px;
+
+            .result {
+                margin-top: 16px;
+                padding: 24px 20px;
+            }
+            .eyebrow {
+                color: var(--muted);
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                margin: 0 0 4px;
+            }
+            .verdict {
+                font-size: 2rem;
+                letter-spacing: -0.02em;
+                line-height: 1.15;
+                margin: 0 0 20px;
+            }
+            .verdict small {
+                font-size: 1rem;
+                color: var(--muted);
+                font-weight: 500;
+                letter-spacing: 0;
+                margin-left: 6px;
             }
             .bar-row {
                 display: grid;
-                grid-template-columns: 110px 1fr 52px;
-                gap: 10px;
+                grid-template-columns: 92px 1fr 44px;
+                gap: 12px;
                 align-items: center;
-                margin: 8px 0;
+                margin: 12px 0;
+            }
+            .bar-row .n {
+                font-weight: 600;
             }
             .bar {
-                height: 12px;
+                height: 10px;
                 background: var(--bar-bg);
-                border-radius: 6px;
+                border-radius: 999px;
                 overflow: hidden;
             }
             .bar > span {
                 display: block;
                 height: 100%;
-                background: var(--bar);
-                border-radius: 6px;
-                transition: width 0.4s;
+                width: 0;
+                border-radius: 999px;
+                background: var(--accent);
+                transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .bar-row.top .bar > span {
+                box-shadow: 0 0 12px
+                    color-mix(in srgb, var(--accent) 55%, transparent);
+            }
+            .bar-row:not(.top) .bar > span {
+                opacity: 0.45;
             }
             .pct {
                 text-align: right;
@@ -142,18 +321,56 @@
             }
             .warn {
                 background: var(--warn-bg);
-                color: var(--warn);
-                border-radius: 8px;
-                padding: 10px 12px;
-                margin-top: 12px;
+                color: var(--warn-fg);
+                border-radius: 6px;
+                padding: 10px 14px;
+                margin-top: 16px;
+                font-size: 0.95rem;
             }
-            .err {
-                color: #b3261e;
+
+            .about {
+                margin-top: 16px;
+                padding: 20px;
             }
-            small,
-            .note {
+            .about h2 {
+                font-size: 1rem;
+                margin: 0 0 10px;
+            }
+            .about ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: grid;
+                gap: 8px;
+            }
+            .about li {
+                padding-left: 18px;
+                position: relative;
                 color: var(--muted);
-                font-size: 0.9rem;
+            }
+            .about li::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0.6em;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            .about b {
+                color: var(--fg);
+                font-weight: 600;
+            }
+            .about .links {
+                margin-top: 14px;
+                padding-top: 14px;
+                border-top: 1px solid var(--line);
+            }
+            .about .links a {
+                color: var(--fg);
+                font-weight: 600;
+                text-underline-offset: 3px;
             }
             [hidden] {
                 display: none !important;
@@ -161,59 +378,122 @@
         </style>
     </head>
     <body>
-        <main>
-            <h1>Accent Recognition</h1>
+        <div class="wrap">
+            <header>
+                <div class="brand">
+                    <i aria-hidden="true"></i>
+                    <span
+                        >Accent Recognition by
+                        <span class="user">adxmb</span></span
+                    >
+                </div>
+                <a
+                    class="gh"
+                    href="https://github.com/adxmb/neural-network"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                        />
+                    </svg>
+                    View on GitHub
+                </a>
+            </header>
+
+            <h1>What accent is this?</h1>
             <p class="lead">
-                Record or upload a few seconds of English speech. A small neural
-                network, written from scratch in NumPy, guesses the accent.
+                Speak for a few seconds. A neural network guesses your accent.
             </p>
 
-            <section class="card" aria-label="Input">
-                <div class="row">
-                    <button id="rec" class="primary" type="button">
-                        Record
-                    </button>
-                    <label class="btn"
-                        >Upload audio<input
+            <section class="panel stage" aria-label="Input">
+                <button
+                    id="rec"
+                    class="mic"
+                    type="button"
+                    aria-label="Start recording"
+                >
+                    <svg
+                        class="mic-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"
+                        />
+                    </svg>
+                    <svg class="stop" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="6" y="6" width="12" height="12" rx="2" />
+                    </svg>
+                </button>
+                <p class="hint" id="hint">Tap to record</p>
+                <div id="status" role="status" aria-live="polite">
+                    Record 3 to 15 seconds.
+                </div>
+                <p class="or">
+                    or
+                    <label class="upload"
+                        >upload an audio file<input
                             id="file"
                             type="file"
                             accept="audio/*"
                     /></label>
-                    <span id="timer" class="note" hidden></span>
-                </div>
-                <div id="status" role="status" aria-live="polite">
-                    Record 3 to 15 seconds. Speak in a normal voice.
-                </div>
+                </p>
                 <audio id="player" controls hidden></audio>
             </section>
 
-            <section class="card" id="result" aria-label="Result" hidden>
-                <h2 class="result-title" id="verdict"></h2>
+            <section
+                class="panel result"
+                id="result"
+                aria-label="Result"
+                hidden
+            >
+                <p class="eyebrow">Best guess</p>
+                <h2 class="verdict" id="verdict"></h2>
                 <div id="bars"></div>
                 <div class="warn" id="lowconf" hidden>
-                    The model is not sure about this clip. Treat the result as a
-                    weak guess.
+                    The model is not sure. Treat this as a weak guess.
                 </div>
             </section>
 
-            <section class="card note" aria-label="About">
-                <strong>What to expect.</strong> The model knows
-                <span id="classes">a few</span> accents. It trained on read
-                speech from the VCTK corpus (74 speakers). On speakers it has
-                never heard, it scores about 54% balanced accuracy, where random
-                guessing scores 33%. It is a portfolio project, not a reliable
-                tool. Audio is processed in memory and is not stored. <br /><a
-                    href="https://github.com/adxmb/neural-network"
-                    >Source code and evaluation</a
-                >
+            <section class="panel about" aria-label="About this model">
+                <h2>About this model</h2>
+                <ul>
+                    <li>
+                        <b>Accents:</b>
+                        <span id="classes">American, English, Scottish</span>.
+                    </li>
+                    <li>
+                        <b>Training data:</b> 74 speakers from the VCTK corpus.
+                    </li>
+                    <li>
+                        <b>Accuracy on new speakers:</b> 54%. Random guess: 33%.
+                    </li>
+                    <li>
+                        <b>Use:</b> this is a demo. It is not a reliable tool.
+                    </li>
+                    <li>
+                        <b>Privacy:</b> the server does not store your audio.
+                    </li>
+                </ul>
+                <div class="links">
+                    <a
+                        href="https://github.com/adxmb/neural-network"
+                        target="_blank"
+                        rel="noopener"
+                        >See the repo on GitHub</a
+                    >
+                </div>
             </section>
-        </main>
+        </div>
 
         <script>
             "use strict";
             const TARGET_RATE = 16000,
                 MAX_SECONDS = 15,
-                MIN_SECONDS = 0.5;
+                MIN_SECONDS = 0.5,
+                WAKE_MS = 4000;
             const $ = (id) => document.getElementById(id);
             let recorder = null,
                 chunks = [],
@@ -282,12 +562,14 @@
 
             async function classify(blob) {
                 setStatus("Analysing...");
+                $("hint").textContent = "Working...";
                 $("rec").disabled = true;
+                let wake = null;
                 try {
                     const samples = await toMono16k(await blob.arrayBuffer());
                     if (samples.length < MIN_SECONDS * TARGET_RATE) {
                         throw new Error(
-                            "That clip is too short. Use at least 1 second of speech.",
+                            "The clip is too short. Use at least 1 second of speech.",
                         );
                     }
                     const wav = encodeWav(samples, TARGET_RATE);
@@ -296,6 +578,13 @@
                     player.hidden = false;
                     const form = new FormData();
                     form.append("file", wav, "clip.wav");
+                    wake = setTimeout(
+                        () =>
+                            setStatus(
+                                "The server is starting. This can take up to a minute.",
+                            ),
+                        WAKE_MS,
+                    );
                     const resp = await fetch("/predict", {
                         method: "POST",
                         body: form,
@@ -308,13 +597,13 @@
                         throw new Error(detail);
                     }
                     showResult(await resp.json());
-                    setStatus(
-                        "Done. Record or upload another clip to try again.",
-                    );
+                    setStatus("Done. Record or upload another clip.");
                 } catch (err) {
                     setStatus(err.message || "Something went wrong.", true);
                 } finally {
+                    clearTimeout(wake);
                     $("rec").disabled = false;
+                    $("hint").textContent = "Tap to record";
                 }
             }
 
@@ -326,36 +615,52 @@
 
             function showResult(data) {
                 $("result").hidden = false;
-                $("verdict").textContent =
-                    `${label(data.accent)} (${Math.round(data.confidence * 100)}%)`;
+                const verdict = $("verdict");
+                verdict.textContent = label(data.accent);
+                const small = document.createElement("small");
+                small.textContent = `${Math.round(data.confidence * 100)}%`;
+                verdict.appendChild(small);
+
                 const bars = $("bars");
                 bars.replaceChildren();
                 const entries = Object.entries(data.probabilities).sort(
                     (a, b) => b[1] - a[1],
                 );
-                for (const [name, p] of entries) {
+                const fills = [];
+                entries.forEach(([name, p], i) => {
                     const row = document.createElement("div");
-                    row.className = "bar-row";
+                    row.className = "bar-row" + (i === 0 ? " top" : "");
                     const n = document.createElement("span");
+                    n.className = "n";
                     n.textContent = label(name);
                     const bar = document.createElement("div");
                     bar.className = "bar";
                     const fill = document.createElement("span");
-                    fill.style.width = `${(p * 100).toFixed(1)}%`;
                     bar.appendChild(fill);
+                    fills.push([fill, p]);
                     const pct = document.createElement("span");
                     pct.className = "pct";
                     pct.textContent = `${Math.round(p * 100)}%`;
                     row.append(n, bar, pct);
                     bars.appendChild(row);
-                }
+                });
+                requestAnimationFrame(() =>
+                    requestAnimationFrame(() => {
+                        for (const [fill, p] of fills)
+                            fill.style.width = `${(p * 100).toFixed(1)}%`;
+                    }),
+                );
                 $("lowconf").hidden = data.confidence >= 0.5;
+                $("result").scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                });
             }
 
             async function startRecording() {
                 if (!navigator.mediaDevices || !window.MediaRecorder) {
                     setStatus(
-                        "This browser cannot record. Use Upload audio instead.",
+                        "This browser cannot record. Upload an audio file instead.",
                         true,
                     );
                     return;
@@ -366,7 +671,7 @@
                     });
                 } catch (_) {
                     setStatus(
-                        "The microphone is blocked. Allow access, or use Upload audio.",
+                        "The microphone is blocked. Allow access, or upload a file.",
                         true,
                     );
                     return;
@@ -379,8 +684,8 @@
                 recorder.onstop = () => {
                     stream.getTracks().forEach((t) => t.stop());
                     clearInterval(tick);
-                    $("timer").hidden = true;
-                    $("rec").textContent = "Record";
+                    $("rec").classList.remove("on");
+                    $("rec").setAttribute("aria-label", "Start recording");
                     classify(
                         new Blob(chunks, {
                             type: recorder.mimeType || "audio/webm",
@@ -389,12 +694,13 @@
                 };
                 recorder.start();
                 started = Date.now();
-                $("rec").textContent = "Stop";
-                $("timer").hidden = false;
-                setStatus("Recording...");
+                $("rec").classList.add("on");
+                $("rec").setAttribute("aria-label", "Stop recording");
+                $("hint").textContent = "Recording... tap to stop";
+                setStatus("0.0 s");
                 tick = setInterval(() => {
                     const s = (Date.now() - started) / 1000;
-                    $("timer").textContent = `${s.toFixed(1)} s`;
+                    setStatus(`${s.toFixed(1)} s of ${MAX_SECONDS} s`);
                     if (s >= MAX_SECONDS) stopRecording();
                 }, 100);
             }

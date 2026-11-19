@@ -14,7 +14,7 @@ from .model import NeuralNetwork
 
 MODEL_PATH = os.environ.get("MODEL_PATH", "artifacts/model.npz")
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
-INDEX_HTML = (Path(__file__).parent / "static" / "index.html").read_text(encoding="utf-8")
+INDEX_PATH = Path(__file__).parent / "static" / "index.html"
 state = {}
 
 @asynccontextmanager
@@ -27,7 +27,8 @@ app = FastAPI(title="Accent Recognition", lifespan=lifespan)
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def index():
-    return INDEX_HTML
+    # Read on every request, so edits to the page show up after a refresh
+    return INDEX_PATH.read_text(encoding="utf-8")
 
 @app.get("/health")
 def health():
