@@ -4,13 +4,17 @@ uvicorn accent_recognition.app:app --host 0.0.0.0 --port 8000
 import os
 import tempfile
 from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import HTMLResponse
 
 from .features import extract_features
 from .model import NeuralNetwork
 
 MODEL_PATH = os.environ.get("MODEL_PATH", "artifacts/model.npz")
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+INDEX_HTML = (Path(__file__).parent / "static" / "index.html").read_text(encoding="utf-8")
 state = {}
 
 @asynccontextmanager
@@ -20,6 +24,10 @@ async def lifespan(app):
     state.clear()
 
 app = FastAPI(title="Accent Recognition", lifespan=lifespan)
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def index():
+    return INDEX_HTML
 
 @app.get("/health")
 def health():

@@ -2,12 +2,13 @@
 .github
 data/
 dataset/
+dataset_all/
 tests/
 docs/
+scripts/
 **/__pycache__
 *.egg-info
-.pytest_cache
 .venv
-.env
+.pytest_cache
 artifacts/metrics.json
-artifacts/cv_metrics.json
+artifacts/cv_*.json

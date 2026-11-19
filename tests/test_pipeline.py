@@ -97,6 +97,10 @@ def test_api_predict(tmp_path, monkeypatch):
 
     with TestClient(app_module.app) as client:
         assert client.get("/health").json()["classes"] == classes
+        page = client.get("/")
+        assert page.status_code == 200
+        assert "text/html" in page.headers["content-type"]
+        assert "Accent Recognition" in page.text
         with open(paths[0], "rb") as f:
             resp = client.post("/predict", files={"file": ("clip.wav", f, "audio/wav")})
         assert resp.status_code == 200

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Accent Recognition</title>
+        <style>
+            :root {
+                --bg: #fafaf7;
+                --fg: #1d1d1b;
+                --muted: #6b6b66;
+                --card: #ffffff;
+                --line: #e2e2dc;
+                --accent: #2f5d50;
+                --accent-fg: #ffffff;
+                --warn: #8a5a00;
+                --warn-bg: #fff4d6;
+                --bar: #2f5d50;
+                --bar-bg: #ecece6;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #141413;
+                    --fg: #ecece6;
+                    --muted: #9a9a92;
+                    --card: #1d1d1b;
+                    --line: #33332f;
+                    --accent: #7fb5a3;
+                    --accent-fg: #11201b;
+                    --warn: #f0c36b;
+                    --warn-bg: #2d2511;
+                    --bar: #7fb5a3;
+                    --bar-bg: #2a2a27;
+                }
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font:
+                    16px/1.5 system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    sans-serif;
+            }
+            main {
+                max-width: 640px;
+                margin: 0 auto;
+                padding: 32px 16px 64px;
+            }
+            h1 {
+                font-size: 1.6rem;
+                margin: 0 0 4px;
+            }
+            p.lead {
+                color: var(--muted);
+                margin: 0 0 24px;
+            }
+            .card {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+            .row {
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            button,
+            label.btn {
+                font: inherit;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 10px 16px;
+                border: 1px solid var(--line);
+                background: var(--card);
+                color: var(--fg);
+            }
+            button.primary {
+                background: var(--accent);
+                color: var(--accent-fg);
+                border-color: var(--accent);
+            }
+            button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+            button:focus-visible,
+            label.btn:focus-within {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
+            input[type="file"] {
+                position: absolute;
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            #status {
+                color: var(--muted);
+                min-height: 1.5em;
+                margin-top: 12px;
+            }
+            audio {
+                width: 100%;
+                margin-top: 12px;
+            }
+            .result-title {
+                font-size: 1.3rem;
+                margin: 0 0 12px;
+            }
+            .bar-row {
+                display: grid;
+                grid-template-columns: 110px 1fr 52px;
+                gap: 10px;
+                align-items: center;
+                margin: 8px 0;
+            }
+            .bar {
+                height: 12px;
+                background: var(--bar-bg);
+                border-radius: 6px;
+                overflow: hidden;
+            }
+            .bar > span {
+                display: block;
+                height: 100%;
+                background: var(--bar);
+                border-radius: 6px;
+                transition: width 0.4s;
+            }
+            .pct {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                color: var(--muted);
+            }
+            .warn {
+                background: var(--warn-bg);
+                color: var(--warn);
+                border-radius: 8px;
+                padding: 10px 12px;
+                margin-top: 12px;
+            }
+            .err {
+                color: #b3261e;
+            }
+            small,
+            .note {
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+            [hidden] {
+                display: none !important;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>Accent Recognition</h1>
+            <p class="lead">
+                Record or upload a few seconds of English speech. A small neural
+                network, written from scratch in NumPy, guesses the accent.
+            </p>
+
+            <section class="card" aria-label="Input">
+                <div class="row">
+                    <button id="rec" class="primary" type="button">
+                        Record
+                    </button>
+                    <label class="btn"
+                        >Upload audio<input
+                            id="file"
+                            type="file"
+                            accept="audio/*"
+                    /></label>
+                    <span id="timer" class="note" hidden></span>
+                </div>
+                <div id="status" role="status" aria-live="polite">
+                    Record 3 to 15 seconds. Speak in a normal voice.
+                </div>
+                <audio id="player" controls hidden></audio>
+            </section>
+
+            <section class="card" id="result" aria-label="Result" hidden>
+                <h2 class="result-title" id="verdict"></h2>
+                <div id="bars"></div>
+                <div class="warn" id="lowconf" hidden>
+                    The model is not sure about this clip. Treat the result as a
+                    weak guess.
+                </div>
+            </section>
+
+            <section class="card note" aria-label="About">
+                <strong>What to expect.</strong> The model knows
+                <span id="classes">a few</span> accents. It trained on read
+                speech from the VCTK corpus (74 speakers). On speakers it has
+                never heard, it scores about 54% balanced accuracy, where random
+                guessing scores 33%. It is a portfolio project, not a reliable
+                tool. Audio is processed in memory and is not stored. <br /><a
+                    href="https://github.com/adxmb/neural-network"
+                    >Source code and evaluation</a
+                >
+            </section>
+        </main>
+
+        <script>
+            "use strict";
+            const TARGET_RATE = 16000,
+                MAX_SECONDS = 15,
+                MIN_SECONDS = 0.5;
+            const $ = (id) => document.getElementById(id);
+            let recorder = null,
+                chunks = [],
+                tick = null,
+                started = 0,
+                stream = null;
+
+            function setStatus(text, isError) {
+                const el = $("status");
+                el.textContent = text;
+                el.classList.toggle("err", !!isError);
+            }
+
+            // Decode any browser-supported audio to mono 16 kHz samples
+            async function toMono16k(arrayBuffer) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new Ctx();
+                let decoded;
+                try {
+                    decoded = await ctx.decodeAudioData(arrayBuffer);
+                } finally {
+                    ctx.close();
+                }
+                const length = Math.ceil(
+                    Math.min(decoded.duration, MAX_SECONDS) * TARGET_RATE,
+                );
+                const offline = new OfflineAudioContext(1, length, TARGET_RATE);
+                const src = offline.createBufferSource();
+                src.buffer = decoded;
+                src.connect(offline.destination);
+                src.start();
+                const rendered = await offline.startRendering();
+                return rendered.getChannelData(0);
+            }
+
+            function encodeWav(samples, rate) {
+                const buf = new ArrayBuffer(44 + samples.length * 2);
+                const v = new DataView(buf);
+                const w = (o, s) => {
+                    for (let i = 0; i < s.length; i++)
+                        v.setUint8(o + i, s.charCodeAt(i));
+                };
+                w(0, "RIFF");
+                v.setUint32(4, 36 + samples.length * 2, true);
+                w(8, "WAVE");
+                w(12, "fmt ");
+                v.setUint32(16, 16, true);
+                v.setUint16(20, 1, true);
+                v.setUint16(22, 1, true);
+                v.setUint32(24, rate, true);
+                v.setUint32(28, rate * 2, true);
+                v.setUint16(32, 2, true);
+                v.setUint16(34, 16, true);
+                w(36, "data");
+                v.setUint32(40, samples.length * 2, true);
+                for (let i = 0; i < samples.length; i++) {
+                    const s = Math.max(-1, Math.min(1, samples[i]));
+                    v.setInt16(
+                        44 + i * 2,
+                        s < 0 ? s * 0x8000 : s * 0x7fff,
+                        true,
+                    );
+                }
+                return new Blob([buf], { type: "audio/wav" });
+            }
+
+            async function classify(blob) {
+                setStatus("Analysing...");
+                $("rec").disabled = true;
+                try {
+                    const samples = await toMono16k(await blob.arrayBuffer());
+                    if (samples.length < MIN_SECONDS * TARGET_RATE) {
+                        throw new Error(
+                            "That clip is too short. Use at least 1 second of speech.",
+                        );
+                    }
+                    const wav = encodeWav(samples, TARGET_RATE);
+                    const player = $("player");
+                    player.src = URL.createObjectURL(wav);
+                    player.hidden = false;
+                    const form = new FormData();
+                    form.append("file", wav, "clip.wav");
+                    const resp = await fetch("/predict", {
+                        method: "POST",
+                        body: form,
+                    });
+                    if (!resp.ok) {
+                        let detail = "The server could not process this audio.";
+                        try {
+                            detail = (await resp.json()).detail || detail;
+                        } catch (_) {}
+                        throw new Error(detail);
+                    }
+                    showResult(await resp.json());
+                    setStatus(
+                        "Done. Record or upload another clip to try again.",
+                    );
+                } catch (err) {
+                    setStatus(err.message || "Something went wrong.", true);
+                } finally {
+                    $("rec").disabled = false;
+                }
+            }
+
+            function label(name) {
+                return name
+                    .replace(/_/g, " ")
+                    .replace(/^./, (c) => c.toUpperCase());
+            }
+
+            function showResult(data) {
+                $("result").hidden = false;
+                $("verdict").textContent =
+                    `${label(data.accent)} (${Math.round(data.confidence * 100)}%)`;
+                const bars = $("bars");
+                bars.replaceChildren();
+                const entries = Object.entries(data.probabilities).sort(
+                    (a, b) => b[1] - a[1],
+                );
+                for (const [name, p] of entries) {
+                    const row = document.createElement("div");
+                    row.className = "bar-row";
+                    const n = document.createElement("span");
+                    n.textContent = label(name);
+                    const bar = document.createElement("div");
+                    bar.className = "bar";
+                    const fill = document.createElement("span");
+                    fill.style.width = `${(p * 100).toFixed(1)}%`;
+                    bar.appendChild(fill);
+                    const pct = document.createElement("span");
+                    pct.className = "pct";
+                    pct.textContent = `${Math.round(p * 100)}%`;
+                    row.append(n, bar, pct);
+                    bars.appendChild(row);
+                }
+                $("lowconf").hidden = data.confidence >= 0.5;
+            }
+
+            async function startRecording() {
+                if (!navigator.mediaDevices || !window.MediaRecorder) {
+                    setStatus(
+                        "This browser cannot record. Use Upload audio instead.",
+                        true,
+                    );
+                    return;
+                }
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        audio: true,
+                    });
+                } catch (_) {
+                    setStatus(
+                        "The microphone is blocked. Allow access, or use Upload audio.",
+                        true,
+                    );
+                    return;
+                }
+                chunks = [];
+                recorder = new MediaRecorder(stream);
+                recorder.ondataavailable = (e) => {
+                    if (e.data.size) chunks.push(e.data);
+                };
+                recorder.onstop = () => {
+                    stream.getTracks().forEach((t) => t.stop());
+                    clearInterval(tick);
+                    $("timer").hidden = true;
+                    $("rec").textContent = "Record";
+                    classify(
+                        new Blob(chunks, {
+                            type: recorder.mimeType || "audio/webm",
+                        }),
+                    );
+                };
+                recorder.start();
+                started = Date.now();
+                $("rec").textContent = "Stop";
+                $("timer").hidden = false;
+                setStatus("Recording...");
+                tick = setInterval(() => {
+                    const s = (Date.now() - started) / 1000;
+                    $("timer").textContent = `${s.toFixed(1)} s`;
+                    if (s >= MAX_SECONDS) stopRecording();
+                }, 100);
+            }
+
+            function stopRecording() {
+                if (recorder && recorder.state === "recording") recorder.stop();
+            }
+
+            $("rec").addEventListener("click", () => {
+                if (recorder && recorder.state === "recording") stopRecording();
+                else startRecording();
+            });
+            $("file").addEventListener("change", (e) => {
+                const f = e.target.files[0];
+                if (f) classify(f);
+                e.target.value = "";
+            });
+
+            fetch("/health")
+                .then((r) => r.json())
+                .then((h) => {
+                    if (h.classes)
+                        $("classes").textContent = h.classes
+                            .map(label)
+                            .join(", ");
+                })
+                .catch(() => {});
+        </script>
+    </body>
+</html>
