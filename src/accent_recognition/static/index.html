@@ -6,13 +6,13 @@
         <title>Accent Recognition by adxmb</title>
         <meta
             name="description"
-            content="Classify an English accent from your voice. A neural network written from scratch in NumPy."
+            content="Classify an English accent from your voice. A neural network written from scratch in NumPy"
         />
         <style>
             :root {
                 --bg: #f6f7f5;
                 --panel: #ffffff;
-                --fg: #101412;
+                --fg: #101214;
                 --muted: #55605b;
                 --line: #dde2de;
                 --accent: #3185c9;
@@ -30,8 +30,8 @@
             }
             @media (prefers-color-scheme: dark) {
                 :root {
-                    --bg: #090c0b;
-                    --panel: #121715;
+                    --bg: #090a0c;
+                    --panel: #121517;
                     --fg: #eef2ef;
                     --muted: #9aa7a0;
                     --line: #222b27;
@@ -79,7 +79,7 @@
                 align-items: center;
                 justify-content: space-between;
                 gap: 12px;
-                padding: 4px 0 28px;
+                padding: 4px 0 20px;
             }
             .brand {
                 font-weight: 700;
@@ -130,7 +130,7 @@
                 font-size: clamp(1.9rem, 6vw, 2.5rem);
                 line-height: 1.1;
                 letter-spacing: -0.03em;
-                margin: 0 0 10px;
+                margin: 0 0 15px;
             }
             .lead {
                 color: var(--muted);
@@ -141,7 +141,7 @@
             .panel {
                 background: var(--panel);
                 border: 1px solid var(--line);
-                border-radius: 10px;
+                border-radius: 15px;
                 box-shadow: var(--shadow);
             }
             .stage {
@@ -403,9 +403,6 @@
             </header>
 
             <h1>What accent is this?</h1>
-            <p class="lead">
-                Speak for a few seconds. A neural network guesses your accent.
-            </p>
 
             <section class="panel stage" aria-label="Input">
                 <button
@@ -429,7 +426,7 @@
                 </button>
                 <p class="hint" id="hint">Tap to record</p>
                 <div id="status" role="status" aria-live="polite">
-                    Record 3 to 15 seconds.
+                    Record 3 to 15 seconds
                 </div>
                 <p class="or">
                     or
@@ -461,20 +458,20 @@
                 <h2>About this model</h2>
                 <ul>
                     <li>
-                        <b>Accents:</b>
-                        <span id="classes">American, English, Scottish</span>.
+                        <i>Accents:</i>
+                        <span id="classes">American, English, Scottish</span>
                     </li>
                     <li>
-                        <b>Training data:</b> 74 speakers from the VCTK corpus.
+                        <i>Training data:</i> 74 speakers from the VCTK corpus
                     </li>
                     <li>
-                        <b>Accuracy on new speakers:</b> 54%. Random guess: 33%.
+                        <i>Accuracy on new speakers:</i> 54%. Random guess: 33%
                     </li>
                     <li>
-                        <b>Use:</b> this is a demo. It is not a reliable tool.
+                        <i>Use:</i> this is a demo. It is not a reliable tool
                     </li>
                     <li>
-                        <b>Privacy:</b> the server does not store your audio.
+                        <i>Privacy:</i> the server does not store your audio
                     </li>
                 </ul>
                 <div class="links">
@@ -569,7 +566,7 @@
                     const samples = await toMono16k(await blob.arrayBuffer());
                     if (samples.length < MIN_SECONDS * TARGET_RATE) {
                         throw new Error(
-                            "The clip is too short. Use at least 1 second of speech.",
+                            "The clip is too short. Must be at least 1 second",
                         );
                     }
                     const wav = encodeWav(samples, TARGET_RATE);
@@ -581,7 +578,7 @@
                     wake = setTimeout(
                         () =>
                             setStatus(
-                                "The server is starting. This can take up to a minute.",
+                                "The server is starting. This can take up to a minute",
                             ),
                         WAKE_MS,
                     );
@@ -590,16 +587,16 @@
                         body: form,
                     });
                     if (!resp.ok) {
-                        let detail = "The server could not process this audio.";
+                        let detail = "The server could not process this audio";
                         try {
                             detail = (await resp.json()).detail || detail;
                         } catch (_) {}
                         throw new Error(detail);
                     }
                     showResult(await resp.json());
-                    setStatus("Done. Record or upload another clip.");
+                    setStatus("Done! Record or upload another clip");
                 } catch (err) {
-                    setStatus(err.message || "Something went wrong.", true);
+                    setStatus(err.message || "Something went wrong", true);
                 } finally {
                     clearTimeout(wake);
                     $("rec").disabled = false;
@@ -660,7 +657,7 @@
             async function startRecording() {
                 if (!navigator.mediaDevices || !window.MediaRecorder) {
                     setStatus(
-                        "This browser cannot record. Upload an audio file instead.",
+                        "This browser cannot record. Upload an audio file instead",
                         true,
                     );
                     return;
@@ -671,7 +668,7 @@
                     });
                 } catch (_) {
                     setStatus(
-                        "The microphone is blocked. Allow access, or upload a file.",
+                        "The microphone is blocked. Allow access, or upload a file",
                         true,
                     );
                     return;
