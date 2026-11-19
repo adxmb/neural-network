@@ -35,18 +35,21 @@ class NeuralNetwork:
         self.A1 = np.maximum(0, self.Z1)
         return softmax(self.A1 @ self.W2 + self.b2)
 
-    def loss(self, probs, y):
+    def loss(self, probs, y, sample_weight=None):
         m = y.shape[0]
-        nll = -np.log(probs[np.arange(m), y] + 1e-12).mean()
+        nll = -np.log(probs[np.arange(m), y] + 1e-12)
+        nll = nll.mean() if sample_weight is None else (sample_weight * nll).mean()
         reg = 0.5 * self.l2 * ((self.W1 ** 2).sum() + (self.W2 ** 2).sum())
         return nll + reg
 
     # -------- backwards ---------
-    def gradients(self, probs, y):
+    def gradients(self, probs, y, sample_weight=None):
         """Gradients for the most recent forward call"""
         m = y.shape[0]
         dZ2 = probs.copy()
         dZ2[np.arange(m), y] -= 1
+        if sample_weight is not None:
+            dZ2 *= sample_weight[:, None]
         dZ2 /= m
         dW2 = self.A1.T @ dZ2 + self.l2 * self.W2
         db2 = dZ2.sum(axis=0)
@@ -67,8 +70,16 @@ class NeuralNetwork:
             setattr(self, k, v.copy())
 
     # -------- training ---------
-    def fit(self, X, y, X_val=None, y_val=None, epochs=300, batch_size=32, patience=30, verbose=True):
-        """Train with minibatch SGD"""
+    def fit(self, X, y, X_val=None, y_val=None, epochs=300, batch_size=32, patience=30, verbose=True,
+            balanced=False):
+        """Train with minibatch SGD. balanced=True weights each class equally"""
+        n_classes = self.W2.shape[1]
+        class_w = np.ones(n_classes)
+        if balanced:
+            counts = np.bincount(y, minlength=n_classes)
+            class_w = len(y) / (n_classes * np.maximum(counts, 1))
+        sw_train = class_w[y]
+        sw_val = class_w[y_val] if X_val is not None else None
         history = {"train_loss": [], "val_loss": [], "val_acc": []}
         best_loss, best_params, wait = np.inf, None, 0
         n = X.shape[0]
@@ -78,14 +89,14 @@ class NeuralNetwork:
             for start in range(0, n, batch_size):
                 batch = order[start:start + batch_size]
                 probs = self.forward(X[batch])
-                self.step(self.gradients(probs, y[batch]))
+                self.step(self.gradients(probs, y[batch], sw_train[batch]))
 
-            train_loss = self.loss(self.forward(X), y)
+            train_loss = self.loss(self.forward(X), y, sw_train)
             history["train_loss"].append(float(train_loss))
 
             if X_val is not None:
                 val_probs = self.forward(X_val)
-                val_loss = self.loss(val_probs, y_val)
+                val_loss = self.loss(val_probs, y_val, sw_val)
                 val_acc = float((val_probs.argmax(axis=1) == y_val).mean())
                 history["val_loss"].append(float(val_loss))
                 history["val_acc"].append(val_acc)

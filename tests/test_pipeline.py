@@ -21,14 +21,16 @@ def make_dataset(root, speakers_per_accent=6, clips_per_speaker=3, seed=0):
                 wave = np.sin(2 * np.pi * f * t) + 0.05 * rng.standard_normal(t.size)
                 sf.write(folder / f"spk{s}_{c}.wav", (0.5 * wave).astype(np.float32), SAMPLE_RATE)
 
-def test_gradients_match_numerical():
+@pytest.mark.parametrize("weighted", [False, True])
+def test_gradients_match_numerical(weighted):
     rng = np.random.default_rng(1)
     net = NeuralNetwork(6, 5, 3, l2=1e-2, seed=1)
     X = rng.standard_normal((8, 6))
     y = rng.integers(0, 3, 8)
 
+    sw = rng.uniform(0.3, 3.0, 8) if weighted else None
     probs = net.forward(X)
-    grads = net.gradients(probs, y)
+    grads = net.gradients(probs, y, sw)
 
     eps = 1e-5
     for name in ("W1", "b1", "W2", "b2"):
@@ -36,9 +38,9 @@ def test_gradients_match_numerical():
         for idx in [tuple(rng.integers(0, s) for s in param.shape) for _ in range(5)]:
             original = param[idx]
             param[idx] = original + eps
-            plus = net.loss(net.forward(X), y)
+            plus = net.loss(net.forward(X), y, sw)
             param[idx] = original - eps
-            minus = net.loss(net.forward(X), y)
+            minus = net.loss(net.forward(X), y, sw)
             param[idx] = original
             numeric = (plus - minus) / (2 * eps)
             assert numeric == pytest.approx(grads[name][idx], rel=1e-4, abs=1e-7)
@@ -126,3 +128,29 @@ def test_limit_clips_per_group():
     assert counts == {"a": 4, "b": 4, "c": 2}
     assert list(keep) == sorted(keep)
     assert list(keep) == list(limit_clips_per_group(groups, 4, seed=1))
+
+def test_balanced_accuracy_ignores_class_size():
+    from accent_recognition.evaluate import balanced_accuracy
+    y_true = np.array([0] * 8 + [1] * 2)
+    assert balanced_accuracy(y_true, np.zeros(10, dtype=int), 2) == pytest.approx(0.5)
+
+
+def test_balanced_training_runs():
+    rng = np.random.default_rng(0)
+    X = np.vstack([rng.normal(0, 1, (40, 4)), rng.normal(3, 1, (8, 4))])
+    y = np.array([0] * 40 + [1] * 8)
+    net = NeuralNetwork(4, 8, 2, seed=0)
+    net.fit(X, y, epochs=30, verbose=False, balanced=True)
+    assert (net.predict(X[y == 1]) == 1).mean() > 0.8
+
+def test_final_mode_saves_loadable_model(tmp_path):
+    import subprocess, sys, json
+    from accent_recognition.model import NeuralNetwork
+    make_dataset(tmp_path / "data")
+    out, metrics = tmp_path / "m.npz", tmp_path / "m.json"
+    subprocess.run([sys.executable, "scripts/train.py", "--data", str(tmp_path / "data"),
+                    "--final", "--epochs", "5", "--out", str(out), "--metrics", str(metrics),
+                    "--cv-metrics", str(tmp_path / "none.json")], check=True)
+    net, scaler, classes = NeuralNetwork.load(out)
+    assert len(classes) == 3
+    assert json.loads(metrics.read_text())["mode"] == "final"

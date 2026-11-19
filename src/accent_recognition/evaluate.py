@@ -32,8 +32,19 @@ def majority_baseline(y_train, y_test):
     return float((y_test == majority).mean())
 
 
-def logistic_regression_baseline(X_train, y_train, X_test, y_test):
+def logistic_regression_predict(X_train, y_train, X_test, balanced=False):
     """A strong, simple reference model (scikit-learn) on the same features"""
     from sklearn.linear_model import LogisticRegression
-    clf = LogisticRegression(max_iter=2000).fit(X_train, y_train)
-    return float(clf.score(X_test, y_test))
+    clf = LogisticRegression(max_iter=2000, class_weight="balanced" if balanced else None)
+    return clf.fit(X_train, y_train).predict(X_test)
+
+
+def logistic_regression_baseline(X_train, y_train, X_test, y_test):
+    return accuracy(y_test, logistic_regression_predict(X_train, y_train, X_test))
+
+def balanced_accuracy(y_true, y_pred, n_classes):
+    """Mean recall over classes. Always-one-class scores 1/n_classes"""
+    cm = confusion_matrix(y_true, y_pred, n_classes)
+    support = cm.sum(axis=1)
+    present = support > 0
+    return float((np.diag(cm)[present] / support[present]).mean())

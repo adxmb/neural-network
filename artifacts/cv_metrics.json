@@ -1,6 +1,7 @@
 {
   "k": 5,
   "seed": 42,
+  "balanced": true,
   "classes": [
     "american",
     "english",
@@ -9,94 +10,121 @@
   "folds": [
     {
       "fold": 1,
-      "test_speakers": 12,
-      "test_clips": 1200,
-      "network": 0.4683333333333333,
-      "logistic_regression": 0.49333333333333335,
-      "majority": 0.3333333333333333
+      "test_speakers": 15,
+      "test_clips": 450,
+      "network": 0.5288888888888889,
+      "logistic_regression": 0.5777777777777777,
+      "majority": 0.4666666666666667,
+      "network_bal": 0.5468253968253968,
+      "logistic_regression_bal": 0.5484126984126984,
+      "majority_bal": 0.3333333333333333
     },
     {
       "fold": 2,
-      "test_speakers": 11,
-      "test_clips": 1100,
-      "network": 0.6081818181818182,
-      "logistic_regression": 0.6881818181818182,
-      "majority": 0.36363636363636365
+      "test_speakers": 15,
+      "test_clips": 450,
+      "network": 0.52,
+      "logistic_regression": 0.5511111111111111,
+      "majority": 0.4666666666666667,
+      "network_bal": 0.5678571428571428,
+      "logistic_regression_bal": 0.5531746031746031,
+      "majority_bal": 0.3333333333333333
     },
     {
       "fold": 3,
-      "test_speakers": 11,
-      "test_clips": 1100,
-      "network": 0.5227272727272727,
-      "logistic_regression": 0.6754545454545454,
-      "majority": 0.2727272727272727
+      "test_speakers": 15,
+      "test_clips": 450,
+      "network": 0.3844444444444444,
+      "logistic_regression": 0.4177777777777778,
+      "majority": 0.4666666666666667,
+      "network_bal": 0.408994708994709,
+      "logistic_regression_bal": 0.41037037037037033,
+      "majority_bal": 0.3333333333333333
     },
     {
       "fold": 4,
-      "test_speakers": 12,
-      "test_clips": 1200,
-      "network": 0.5391666666666667,
-      "logistic_regression": 0.64,
-      "majority": 0.3333333333333333
+      "test_speakers": 15,
+      "test_clips": 450,
+      "network": 0.5666666666666667,
+      "logistic_regression": 0.5888888888888889,
+      "majority": 0.4,
+      "network_bal": 0.5740740740740741,
+      "logistic_regression_bal": 0.5846296296296296,
+      "majority_bal": 0.3333333333333333
     },
     {
       "fold": 5,
-      "test_speakers": 11,
-      "test_clips": 1100,
-      "network": 0.5127272727272727,
-      "logistic_regression": 0.5136363636363637,
-      "majority": 0.36363636363636365
+      "test_speakers": 14,
+      "test_clips": 420,
+      "network": 0.5761904761904761,
+      "logistic_regression": 0.6238095238095238,
+      "majority": 0.42857142857142855,
+      "network_bal": 0.5824074074074074,
+      "logistic_regression_bal": 0.6268518518518519,
+      "majority_bal": 0.3333333333333333
     }
   ],
   "summary": {
     "network": {
-      "mean": 0.5302272727272727,
-      "std": 0.05086792617831277
+      "mean": 0.5152380952380952,
+      "std": 0.07693518326347398
     },
     "logistic_regression": {
-      "mean": 0.6021212121212122,
-      "std": 0.09203719254602402
+      "mean": 0.5518730158730158,
+      "std": 0.07936971415038249
     },
     "majority": {
+      "mean": 0.4457142857142856,
+      "std": 0.030416608424135832
+    },
+    "network_bal": {
+      "mean": 0.536031746031746,
+      "std": 0.07222480226800361
+    },
+    "logistic_regression_bal": {
+      "mean": 0.5446878306878307,
+      "std": 0.08135317106525619
+    },
+    "majority_bal": {
       "mean": 0.3333333333333333,
-      "std": 0.03711348095126029
+      "std": 0.0
     }
   },
   "pooled_confusion_matrix": [
     [
-      1223,
-      452,
-      225
+      413,
+      84,
+      163
     ],
     [
-      454,
-      873,
-      573
+      229,
+      422,
+      339
     ],
     [
-      360,
-      619,
-      921
+      86,
+      177,
+      307
     ]
   ],
   "pooled_per_class": {
     "american": {
-      "precision": 0.600392734413353,
-      "recall": 0.6436842105263157,
-      "f1": 0.6212852425704851,
-      "support": 1900
+      "precision": 0.5673076923076923,
+      "recall": 0.6257575757575757,
+      "f1": 0.595100864553314,
+      "support": 660
     },
     "english": {
-      "precision": 0.44907407407407407,
-      "recall": 0.4594736842105263,
-      "f1": 0.45421436004162324,
-      "support": 1900
+      "precision": 0.6178623718887262,
+      "recall": 0.4262626262626263,
+      "f1": 0.5044829647340108,
+      "support": 990
     },
     "scottish": {
-      "precision": 0.5357766143106457,
-      "recall": 0.48473684210526313,
-      "f1": 0.5089803813208068,
-      "support": 1900
+      "precision": 0.3794808405438813,
+      "recall": 0.5385964912280702,
+      "f1": 0.4452501812907904,
+      "support": 570
     }
   }
 }

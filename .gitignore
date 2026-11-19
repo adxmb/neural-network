@@ -7,3 +7,5 @@ dataset/
 dataset_all/
 data/
 .env
+artifacts/cv_*.json
+!artifacts/cv_metrics.json

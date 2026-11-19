@@ -1,51 +1,47 @@
 {
-  "test_accuracy": 0.455,
-  "majority_baseline": 0.3333333333333333,
-  "logistic_regression_baseline": 0.4666666666666667,
+  "mode": "final",
+  "note": "Early-stopping speakers were used to pick the weights, so the early-stopping numbers are optimistic. Use the cross-validation summary as the honest estimate of accuracy on new speakers.",
   "classes": [
     "american",
     "english",
     "scottish"
   ],
-  "confusion_matrix": [
-    [
-      174,
-      84,
-      42
-    ],
-    [
-      106,
-      212,
-      182
-    ],
-    [
-      71,
-      169,
-      160
-    ]
-  ],
-  "per_class": {
-    "american": {
-      "precision": 0.49572649572649574,
-      "recall": 0.58,
-      "f1": 0.5345622119815668,
-      "support": 300
+  "n_train_clips": 1770,
+  "n_val_clips": 450,
+  "n_train_speakers": 59,
+  "n_val_speakers": 15,
+  "early_stopping_balanced_accuracy": 0.4916666666666667,
+  "cross_validation_summary": {
+    "network": {
+      "mean": 0.5152380952380952,
+      "std": 0.07693518326347398
     },
-    "english": {
-      "precision": 0.4559139784946237,
-      "recall": 0.424,
-      "f1": 0.4393782383419689,
-      "support": 500
+    "logistic_regression": {
+      "mean": 0.5518730158730158,
+      "std": 0.07936971415038249
     },
-    "scottish": {
-      "precision": 0.4166666666666667,
-      "recall": 0.4,
-      "f1": 0.4081632653061225,
-      "support": 400
+    "majority": {
+      "mean": 0.4457142857142856,
+      "std": 0.030416608424135832
+    },
+    "network_bal": {
+      "mean": 0.536031746031746,
+      "std": 0.07222480226800361
+    },
+    "logistic_regression_bal": {
+      "mean": 0.5446878306878307,
+      "std": 0.08135317106525619
+    },
+    "majority_bal": {
+      "mean": 0.3333333333333333,
+      "std": 0.0
     }
   },
-  "n_train": 3600,
-  "n_val": 900,
-  "n_test": 1200,
-  "seed": 3
+  "hyperparameters": {
+    "hidden": 64,
+    "lr": 0.05,
+    "l2": 0.1,
+    "batch_size": 32,
+    "seed": 42
+  }
 }
